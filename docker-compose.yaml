@@ -1,6 +1,6 @@
 services:
   comfyui:
-    image: comfyui:1
+    image: comfyui_custom:latest
     container_name: comfyui
     restart: always
     
