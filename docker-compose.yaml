@@ -1,0 +1,50 @@
+services:
+  comfyui:
+    image: comfyui:1
+    container_name: comfyui
+    restart: always
+    
+    command: ["python", "main.py", "--listen", "0.0.0.0", "--port", "8188"]
+    
+    ports:
+      - "8001:8188"
+    
+    environment:
+      - PYTHONUNBUFFERED=1
+      - CUDA_VISIBLE_DEVICES=0
+    
+    volumes:
+      # Persist models to avoid re-downloading
+      - ./models:/app/models
+      - ./output:/app/output
+      - ./input:/app/input
+      # Optional: persist custom nodes
+      - ./custom_nodes:/app/custom_nodes
+    
+    # GPU access
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    
+    # Health check using wget (available in your container)
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8188"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 300s  # 5 minutes for model loading
+    
+    # Optional: Resource limits
+    # mem_limit: 16g
+    # shm_size: 2g
+
+# Create named volumes for better organization
+volumes:
+  models_data:
+    driver: local
+  output_data:
+    driver: local
