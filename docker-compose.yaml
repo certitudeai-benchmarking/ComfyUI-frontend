@@ -1,7 +1,6 @@
 services:
   comfyui:
-    image: comfyui_custom:latest
-    container_name: comfyui
+    image: 050451373362.dkr.ecr.us-east-1.amazonaws.com/clarity-v2/comfyui-frontend:latest
     restart: always
     
     command: ["python", "main.py", "--listen", "0.0.0.0", "--port", "8188"]
@@ -12,14 +11,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - CUDA_VISIBLE_DEVICES=0
-    
-    volumes:
-      # Persist models to avoid re-downloading
-      - ./models:/app/models
-      - ./output:/app/output
-      - ./input:/app/input
-      # Optional: persist custom nodes
-      - ./custom_nodes:/app/custom_nodes
+  
     
     # GPU access
     deploy:
@@ -41,10 +33,3 @@ services:
     # Optional: Resource limits
     # mem_limit: 16g
     # shm_size: 2g
-
-# Create named volumes for better organization
-volumes:
-  models_data:
-    driver: local
-  output_data:
-    driver: local
